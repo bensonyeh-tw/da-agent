@@ -1,30 +1,157 @@
 {
   "eval_cases": [
     {
-      "eval_case_id": "greeting",
+      "eval_case_id": "hw_err_pay_4001_recovery",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Hello, what can you help me with?"}]
+        "parts": [{"text": "What is the immediate field recovery protocol when a cashier encounters an ERR-PAY-4001 EMV contactless payment freeze, and how do we ensure the customer is not double-charged?"}]
       }
     },
     {
-      "eval_case_id": "weather_query",
+      "eval_case_id": "hw_err_dn_prnt_24v_printer",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "What's the weather like in San Francisco?"}]
+        "parts": [{"text": "Field service recovery procedure for ERR-DN-PRNT-24V on Diebold Nixdorf Beetle receipt printer."}]
       }
     },
     {
-      "eval_case_id": "capital_lookup",
+      "eval_case_id": "hw_err_clv_emv_timeout",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "What is the capital of France?"}]
-      },
-      "reference": {
-        "response": {
-          "role": "model",
-          "parts": [{"text": "The capital of France is Paris."}]
-        }
+        "parts": [{"text": "Cashier terminal is throwing ERR-CLV-EMV-TIMEOUT on Clover Station Solo. What is the step-by-step diagnostic sequence?"}]
+      }
+    },
+    {
+      "eval_case_id": "hw_ncr_touch_freeze",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "How do I troubleshoot a frozen touchscreen on an NCR RealPOS XR7 checkout lane?"}]
+      }
+    },
+    {
+      "eval_case_id": "hw_hp_engage_display_lag",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the certified cabling and power check procedure for customer display video lag on HP Engage One Pro?"}]
+      }
+    },
+    {
+      "eval_case_id": "hw_out_of_scope_automotive",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "How do I replace the engine oil and transmission fluid on a Ford F-150 truck?"}]
+      }
+    },
+    {
+      "eval_case_id": "hw_out_of_scope_kitchen",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the descaling instructions for the breakroom commercial espresso maker?"}]
+      }
+    },
+    {
+      "eval_case_id": "hw_out_of_scope_weather",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the current weather forecast and humidity in Chicago today?"}]
+      }
+    },
+    {
+      "eval_case_id": "cashier_fraud_live_lookup",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Check the live 1-hour rolling metrics and active audit status for Cashier CASH_1190 at STORE_048 right now."}]
+      }
+    },
+    {
+      "eval_case_id": "cashier_fraud_store_012",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Query Cloud Bigtable for real-time manual override rate and risk score for Cashier CASH_1027 at store STORE_012."}]
+      }
+    },
+    {
+      "eval_case_id": "cashier_fraud_risk_score",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the current audit status flag and 1-hour promo override rate for Cashier CASH_1164 at STORE_048?"}]
+      }
+    },
+    {
+      "eval_case_id": "cashier_fraud_comparative_baseline",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is Cashier CASH_1190's live 1-hour override rate right now, compared to their 7-day historical override baseline?"}]
+      }
+    },
+    {
+      "eval_case_id": "cashier_fraud_top_abusers",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Show cashiers with active cashier promo abuse alerts in the last 7 days and retrieve checkout logs for the top offender."}]
+      }
+    },
+    {
+      "eval_case_id": "inventory_stockout_risk_20h",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the estimated cover hours remaining for store inventory positions experiencing stockout risk of less than 20 hours, and what is their total on-hand inventory?"}]
+      }
+    },
+    {
+      "eval_case_id": "inventory_total_on_hand",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Calculate the total on-hand inventory across shelf_qty and backroom_qty for all active retail SKUs."}]
+      }
+    },
+    {
+      "eval_case_id": "inventory_backroom_replenishment",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Which store products have zero shelf inventory but positive backroom stock ready for immediate replenishment?"}]
+      }
+    },
+    {
+      "eval_case_id": "warranty_triage_galaxy_watch",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Check transaction details for TXN-20260312-0015811 and show the warranty coverage policy for the purchased item."}]
+      }
+    },
+    {
+      "eval_case_id": "warranty_duration_policy",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What are the manufacturer warranty duration and service level exclusions for prod_1954 in the warranty repository?"}]
+      }
+    },
+    {
+      "eval_case_id": "sales_intraday_revenue",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the total intraday net transaction revenue recorded in pos_transactions_gold for today's business date?"}]
+      }
+    },
+    {
+      "eval_case_id": "cross_cloud_s3_ledger_audit",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Retrieve federated AWS S3 transaction ledger records from silver_pos_transactions for Cashier CASH_1164."}]
+      }
+    },
+    {
+      "eval_case_id": "hardware_fru_toshiba_specs",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "What is the certified procedural runbook and replacement steps for Toshiba TCx 810 display rotation and captive thumbscrews?"}]
+      }
+    },
+    {
+      "eval_case_id": "pos_anomaly_weekly_summary",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "How many total high-severity promo abuse anomalies were triggered in pos_anomaly_alerts over the past 7 days across all stores?"}]
       }
     }
   ]

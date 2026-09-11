@@ -7,9 +7,9 @@ import unittest
 # Ensure app package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.tools.rag_tool import pos_troubleshooting_rag_tool
 from app.tools.analytics_tool import cymbal_analytics_tool
 from app.tools.bigtable_tool import read_cashier_realtime_alerts
+from app.tools.rag_tool import pos_troubleshooting_rag_tool
 
 
 class TestCymbalOperationsAgent(unittest.TestCase):

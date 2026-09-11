@@ -8,13 +8,19 @@ similarity score guardrails, keyword SEARCH fallback, and clickable GCS document
 import logging
 import os
 import time
-from typing import Any
+
 from google.cloud import bigquery
 
 logger = logging.getLogger(__name__)
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "benson-data-elevate")
 SIMILARITY_THRESHOLD = 0.70
+
+
+RAG_DECLINE_STRING = os.getenv(
+    "RAG_DECLINE_STRING",
+    "Out of Scope Hardware: No certified POS hardware documentation found for this query in the Cymbal Retail operations repository.",
+)
 
 
 def pos_troubleshooting_rag_tool(query: str) -> str:
@@ -150,14 +156,14 @@ def pos_troubleshooting_rag_tool(query: str) -> str:
                     f"{s_row.stitched_runbook}\n"
                 )
 
-            # Neither vector search above 0.70 nor keyword search found matches -> Certified warning string
-            return "⚠️ Out of Scope Hardware: No certified POS hardware documentation found for this query in the Cymbal Retail operations repository."
+            # Neither vector search above 0.70 nor keyword search found matches -> Exact decline string
+            return RAG_DECLINE_STRING
 
         except Exception as e:
             logger.warning("BigQuery RAG query error (attempt %d/%d): %s", attempt, max_retries, e)
             if attempt == max_retries:
-                return f"Hardware runbook lookup temporarily unavailable: {e}"
+                return "Hardware runbook lookup temporarily unavailable. Please retry shortly."
             time.sleep(backoff)
             backoff *= 2.0
 
-    return "⚠️ Out of Scope Hardware: No certified POS hardware documentation found for this query in the Cymbal Retail operations repository."
+    return RAG_DECLINE_STRING

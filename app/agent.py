@@ -7,16 +7,18 @@ Decoupled 3-toolset coordinator orchestrating:
 """
 
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from google.adk.agents import Agent
-from google.adk.apps import App
-from google.adk.models import Gemini
-from google.genai import types
+from google.adk.agents import Agent  # noqa: E402
+from google.adk.apps import App  # noqa: E402
+from google.adk.models import Gemini  # noqa: E402
+from google.genai import types  # noqa: E402
 
-from app.tools import (
+from app.app_utils.masking import mask_sensitive_data  # noqa: E402
+from app.tools import (  # noqa: E402
     cymbal_analytics_tool,
     pos_troubleshooting_rag_tool,
     read_cashier_realtime_alerts,
@@ -86,6 +88,18 @@ You are the master autonomous operations coordinator for Cymbal Retail. You assi
 - **Synthesis:** Present an integrated cross-cloud audit dossier documenting the anomaly signals detected in GCP alongside the corresponding raw transaction slips from AWS S3.
 """
 
+
+def mask_model_response_callback(context, response):
+    """Callback to sanitize sensitive PII/tokens and clear unencoded thought signatures."""
+    if response and response.content and response.content.parts:
+        for part in response.content.parts:
+            if hasattr(part, "text") and part.text:
+                part.text = mask_sensitive_data(part.text)
+            if hasattr(part, "thought_signature") and part.thought_signature:
+                part.thought_signature = None
+    return response
+
+
 root_agent = Agent(
     name="cymbal_operations_agent",
     model=Gemini(
@@ -98,9 +112,10 @@ root_agent = Agent(
         pos_troubleshooting_rag_tool,
         read_cashier_realtime_alerts,
     ],
+    after_model_callback=mask_model_response_callback,
 )
 
 app = App(
     root_agent=root_agent,
-    name="cymbal_operations_app",
+    name=os.getenv("ADK_APP_NAME", "app"),
 )

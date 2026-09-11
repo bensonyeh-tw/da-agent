@@ -1,0 +1,93 @@
+# Cloud Monitoring Metric Descriptors & Alerting Policies for Cymbal Operations Agent
+# Project: benson-data-elevate
+
+metrics:
+  - type: custom.googleapis.com/cymbal_ops/tool_execution_latency
+    description: Latency in seconds for Cymbal Operations agent tool executions
+    metricKind: GAUGE
+    valueType: DOUBLE
+    unit: s
+    labels:
+      - key: tool_name
+        description: Name of the executed tool (bigtable, rag, analytics)
+      - key: status
+        description: Execution outcome (success, error, degraded)
+
+  - type: custom.googleapis.com/cymbal_ops/cashier_anomaly_rate
+    description: Real-time cashier 1-hour promo override rate retrieved from Cloud Bigtable
+    metricKind: GAUGE
+    valueType: DOUBLE
+    unit: "1"
+    labels:
+      - key: store_id
+        description: Store identifier (e.g., STORE_048)
+      - key: cashier_id
+        description: Cashier identifier (e.g., CASH_1190)
+      - key: audit_status
+        description: Active fraud audit status (review, clear)
+
+  - type: custom.googleapis.com/cymbal_ops/rag_query_count
+    description: Counter for POS hardware runbook RAG lookups
+    metricKind: CUMULATIVE
+    valueType: INT64
+    unit: "1"
+    labels:
+      - key: match_type
+        description: Match category (vector, keyword, out_of_scope)
+      - key: equipment
+        description: Hardware family or model covered
+
+  - type: custom.googleapis.com/cymbal_ops/rag_out_of_scope_count
+    description: Counter for queries falling below similarity threshold and returned out-of-scope
+    metricKind: CUMULATIVE
+    valueType: INT64
+    unit: "1"
+
+alert_policies:
+  - displayName: "[Cymbal Ops] Elevated Cashier Promo Override Anomaly"
+    documentation:
+      content: "A cashier's 1-hour manual override rate has exceeded the 30% fraud risk threshold in Cloud Bigtable."
+      mimeType: text/markdown
+    combiner: OR
+    conditions:
+      - displayName: "Cashier Override Rate > 0.30"
+        conditionThreshold:
+          filter: 'metric.type="custom.googleapis.com/cymbal_ops/cashier_anomaly_rate" resource.type="global"'
+          comparison: COMPARISON_GT
+          thresholdValue: 0.30
+          duration: 300s
+          aggregations:
+            - alignmentPeriod: 60s
+              perSeriesAligner: ALIGN_MEAN
+
+  - displayName: "[Cymbal Ops] High Agent Tool Invocation Latency Spikes"
+    documentation:
+      content: "Tool execution latency exceeds 15 seconds across agent microservices."
+      mimeType: text/markdown
+    combiner: OR
+    conditions:
+      - displayName: "Tool Execution Latency > 15s"
+        conditionThreshold:
+          filter: 'metric.type="custom.googleapis.com/cymbal_ops/tool_execution_latency" resource.type="global"'
+          comparison: COMPARISON_GT
+          thresholdValue: 15.0
+          duration: 180s
+          aggregations:
+            - alignmentPeriod: 60s
+              perSeriesAligner: ALIGN_PERCENTILE_95
+
+  - displayName: "[Cymbal Ops] Spike in Out-of-Scope Hardware Queries"
+    documentation:
+      content: "More than 20 queries failed POS hardware runbook matching within a 15-minute window."
+      mimeType: text/markdown
+    combiner: OR
+    conditions:
+      - displayName: "Out-of-Scope Rate > 20 / 15m"
+        conditionThreshold:
+          filter: 'metric.type="custom.googleapis.com/cymbal_ops/rag_out_of_scope_count" resource.type="global"'
+          comparison: COMPARISON_GT
+          thresholdValue: 20
+          duration: 900s
+          aggregations:
+            - alignmentPeriod: 60s
+              perSeriesAligner: ALIGN_RATE

@@ -30,9 +30,20 @@ def evaluate(instance):
         prompt += f"Expected Answer (ground truth): {reference}\n"
     prompt += f"Full Agent Trace: {instance.get('agent_data', '')}\n"
 
-    client = genai.Client()  # AI Studio (GEMINI_API_KEY) or Agent Platform (ADC)
+    import os
+
+    vertex_enabled = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "true").lower() in ("true", "1", "yes")
+    project = os.getenv("GOOGLE_CLOUD_PROJECT", "benson-data-elevate")
+    location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+    eval_model = os.getenv("EVAL_JUDGE_MODEL", os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+
+    if os.getenv("GEMINI_API_KEY"):
+        client = genai.Client()
+    else:
+        client = genai.Client(vertexai=vertex_enabled, project=project, location=location)
+
     response = client.models.generate_content(
-        model="gemini-3.7-flash",
+        model=eval_model,
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0,  # deterministic grading

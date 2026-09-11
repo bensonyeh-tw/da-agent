@@ -8,19 +8,23 @@ import json
 import logging
 import os
 import time
-from typing import Any
+
 import google.auth
-from google.auth.transport.requests import Request
 import requests
+from google.auth.transport.requests import Request
 
 logger = logging.getLogger(__name__)
 
-DATA_AGENT_RESOURCE = os.getenv(
-    "DATA_AGENT_NAME",
-    "projects/benson-data-elevate/locations/global/dataAgents/cymbal-retail-analytics-agent",
-)
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "benson-data-elevate")
 LOCATION = os.getenv("DATA_AGENT_LOCATION", "global")
+DATA_AGENT_ID = os.getenv("DATA_AGENT_ID", "cymbal-retail-analytics-agent")
+DATA_AGENT_RESOURCE = os.getenv(
+    "DATA_AGENT_RESOURCE",
+    os.getenv(
+        "DATA_AGENT_NAME",
+        f"projects/{PROJECT_ID}/locations/{LOCATION}/dataAgents/{DATA_AGENT_ID}",
+    ),
+)
 
 
 def cymbal_analytics_tool(query: str) -> str:
@@ -77,7 +81,6 @@ def cymbal_analytics_tool(query: str) -> str:
 
                 final_text = ""
                 generated_sql = ""
-                data_summary = ""
 
                 for event in events:
                     sys_msg = event.get("systemMessage", {})
@@ -118,7 +121,7 @@ def cymbal_analytics_tool(query: str) -> str:
         except Exception as e:
             logger.warning("GDA API request exception (attempt %d/%d): %s", attempt, max_retries, e)
             if attempt == max_retries:
-                return f"Store data is temporarily unreachable: {e}. Please retry shortly."
+                return "Store data is temporarily unreachable. Please retry shortly."
             time.sleep(backoff)
             backoff *= 2.0
 
